@@ -46,7 +46,7 @@ public class StoreController extends BaseController {
 			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
 			@RequestParam(name = "size", defaultValue = "10", required = false) int size) {
 		LOG.info("Getting all stores");
-		size = size > PAGE_MAX_SIZE ? PAGE_MAX_SIZE : size;
+		size = (size > PAGE_MAX_SIZE || size <= 0) ? PAGE_MAX_SIZE : size;
 		
 		return createResponse(buildPagedResources(storeService.getAllStores(new PageRequest(page, size))));
 	}
@@ -70,7 +70,7 @@ public class StoreController extends BaseController {
 			@RequestParam(name = "page", defaultValue = "0", required = false) int page,
 			@RequestParam(name = "size", defaultValue = "10", required = false) int size) {
 		LOG.info("Finding store near");
-		size = size > PAGE_MAX_SIZE ? PAGE_MAX_SIZE : size;
+		size = (size > PAGE_MAX_SIZE || size <= 0) ? PAGE_MAX_SIZE : size;
 		
 		if (storeLocationType != null) {
 			return createResponse(buildPagedResources(storeService.getStoresByTypeNearMe(new PageRequest(page, size),

@@ -2,10 +2,15 @@ package com.jumbo.api.controller;
 
 import static com.jumbo.api.utils.JumboAPIStringConfig.STORE_BASE_URL;
 import static com.jumbo.api.utils.JumboAPIStringConfig.STORE_GET_ALL_URL;
+import static com.jumbo.api.utils.JumboAPIStringConfig.STORE_NEAR_URL;
 import static com.jumbo.api.utils.ObjectCreator.getPageRequest;
 import static com.jumbo.api.utils.ObjectCreator.getStore1;
-import static com.jumbo.api.utils.ObjectCreator.getStoreList;
+import static com.jumbo.api.utils.ObjectCreator.getStore1Page;
+import static com.jumbo.api.utils.ObjectCreator.getStoresPage;
+import static com.jumbo.api.utils.ObjectCreator.urlNearParameters;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -74,8 +79,8 @@ public class StoreControllerTest {
 	}
 
 	@Test
-	public void shouldReturnStatus204DueToAEmptyList() throws Exception {
-		when(service.getAllStores(getPageRequest())).thenReturn(new PageImpl<>(new ArrayList<>()));
+	public void shouldReturnStatus200DueToAEmptyList() throws Exception {
+		when(service.getAllStores(getPageRequest())).thenReturn(new PageImpl<>(new ArrayList<>(), getPageRequest(), 0));
 
 		mvc.perform(get(STORE_GET_ALL_URL).contentType(APPLICATION_JSON_UTF8_VALUE)).andExpect(status().isOk());
 	}
@@ -114,4 +119,29 @@ public class StoreControllerTest {
 				.content(objectMapper.writeValueAsString(testStore))
 				.contentType(APPLICATION_JSON_UTF8_VALUE)).andExpect(status().is2xxSuccessful());
 	}
+	
+	@Test
+	public void shouldBringBothStores() throws Exception {
+		when(service.getStoresNearMe(getPageRequest(), testStore.getLocation().getCoordinates()[0], testStore.getLocation().getCoordinates()[1], 0, 500)).thenReturn(getStoresPage());
+
+		mvc.perform(get(STORE_NEAR_URL).params(urlNearParameters(getPageRequest(), null, testStore.getLocation().getCoordinates()[0], testStore.getLocation().getCoordinates()[1], 0, 500))
+				.content(objectMapper.writeValueAsString(testStore))
+				.contentType(APPLICATION_JSON_UTF8_VALUE));
+		
+		verify(service, times(1)).getStoresNearMe(getPageRequest(), testStore.getLocation().getCoordinates()[0], testStore.getLocation().getCoordinates()[1], 0, 500);
+	}
+	
+	@Test
+	public void shouldBringJustOneStore() throws Exception {
+		when(service.getStoresByTypeNearMe(getPageRequest(), testStore.getLocationType(), testStore.getLocation().getCoordinates()[0], testStore.getLocation().getCoordinates()[1], 0, 500)).thenReturn(getStore1Page());
+
+		mvc.perform(get(STORE_NEAR_URL).params(urlNearParameters(getPageRequest(), testStore.getLocationType(), testStore.getLocation().getCoordinates()[0], testStore.getLocation().getCoordinates()[1], 0, 500))
+				.content(objectMapper.writeValueAsString(testStore))
+				.contentType(APPLICATION_JSON_UTF8_VALUE));
+		
+		verify(service, times(1)).getStoresByTypeNearMe(getPageRequest(), testStore.getLocationType(), testStore.getLocation().getCoordinates()[0], testStore.getLocation().getCoordinates()[1], 0, 500);
+				
+	}
+	
+
 }

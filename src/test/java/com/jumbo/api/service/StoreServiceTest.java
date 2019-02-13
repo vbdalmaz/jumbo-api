@@ -3,7 +3,7 @@ package com.jumbo.api.service;
 import static com.jumbo.api.utils.ObjectCreator.getPageRequest;
 import static com.jumbo.api.utils.ObjectCreator.getStore1;
 import static com.jumbo.api.utils.ObjectCreator.getStore2;
-import static com.jumbo.api.utils.ObjectCreator.getStoreList;
+import static com.jumbo.api.utils.ObjectCreator.getStoresPage;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.jumbo.api.exception.StoreDuplicatedException;
 import com.jumbo.api.exception.StoreInvalidException;
 import com.jumbo.api.repository.StoreRepository;
 import com.jumbo.api.service.impl.StoreServiceImpl;
@@ -45,9 +46,9 @@ public class StoreServiceTest {
     
 	@Test
 	public void shouldReturnAList() throws Exception {
-		when(storeRepository.findAll(getPageRequest())).thenReturn(getStoreList());
+		when(storeRepository.findAll(getPageRequest())).thenReturn(getStoresPage());
 		
-		assertThat(storeService.getAllStores(getPageRequest())).isEqualTo(getStoreList());
+		assertThat(storeService.getAllStores(getPageRequest())).isEqualTo(getStoresPage());
 	}
 	
 	@Test
@@ -57,6 +58,24 @@ public class StoreServiceTest {
 		
 		assertThat(storeService.getStore(getStore1().getUuid())).isEqualTo(getStore1());
 	}
+	
+	@Test
+	public void shouldReturnAPageStoreWithoutType() throws Exception {
+
+		storeService.getStoresNearMe(getPageRequest(), getStore1().getLocation().getCoordinates()[0], getStore1().getLocation().getCoordinates()[1], 0, 5000);
+		
+		verify(storeRepository, times(1)).findStoresNear(getPageRequest(), getStore1().getLocation().getCoordinates()[0], getStore1().getLocation().getCoordinates()[1], 0, 5000);
+	}
+	
+	@Test
+	public void shouldReturnAPageStoreType() throws Exception {
+
+		storeService.getStoresByTypeNearMe(getPageRequest(),getStore1().getLocationType() ,getStore1().getLocation().getCoordinates()[0], getStore1().getLocation().getCoordinates()[1], 0L, 5000L);
+		
+		verify(storeRepository, times(1)).findStoresNearAndByType(getPageRequest(), getStore1().getLocationType(), getStore1().getLocation().getCoordinates()[0], getStore1().getLocation().getCoordinates()[1], 0, 5000);
+	}
+	
+	
 	@Test
 	public void shouldCreateStore() throws Exception {
 		when(storeRepository.findByUuid(getStore2().getUuid())).thenReturn(null);
@@ -64,6 +83,15 @@ public class StoreServiceTest {
 		storeService.createStore(getStore2());
 		
 		verify(storeRepository, times(1)).save(getStore2());
+	}
+	
+	@Test(expected = StoreDuplicatedException.class)
+	public void shouldNotCreateStore() throws Exception {
+		when(storeRepository.findByUuid(getStore2().getUuid())).thenReturn(getStore2());
+		
+		storeService.createStore(getStore2());
+		
+		verify(storeRepository, times(0)).save(getStore2());
 	}
 	
 	@Test

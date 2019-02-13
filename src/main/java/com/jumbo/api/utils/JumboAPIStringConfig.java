@@ -17,5 +17,5 @@ public abstract class JumboAPIStringConfig {
 	public static final String STORE_ERROR_EXCEPTION_MESSAGE = "Your Store is not valid check your input";
 
 	/* Page */
-	public static final int PAGE_MAX_SIZE = 20;
+	public static final int PAGE_MAX_SIZE = 15;
 }

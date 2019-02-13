@@ -6,6 +6,9 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.jumbo.api.handler.ResponseError;
 import com.jumbo.api.model.Location;
@@ -19,6 +22,14 @@ public class ObjectCreator {
 	
 	public static ResponseError createResponseError(Integer erroCode, String message) {
 		return new ResponseError(erroCode, message);
+	}
+	
+	public static ResponseError createResponseErrorForTest(Integer erroCode, String message) {
+		ResponseError error =  new ResponseError();
+		error.setCode(erroCode);
+		error.setMessage(message);
+		
+		return error;
 	}
 
 	public static Store createStore(String uuid, String city, String postalCode, String street, String street2,
@@ -47,14 +58,39 @@ public class ObjectCreator {
 		return store2;
 	}
 	
-	public static Page<Store> getStoreList(){
+	public static List<Store> getStoreList(){
 		List<Store> list = new ArrayList<Store>();
 		list.add(getStore1());
 		list.add(getStore2());
 		
-		Page<Store> page = new PageImpl<Store>(list);
+		return list;
+	}
+	
+	public static Page<Store> getStoresPage(){
+		return new PageImpl<Store>(getStoreList(), getPageRequest(), getStoreList().size());
+	}
+	
+	public static Page<Store> getStore1Page(){
+		List<Store> list = new ArrayList<Store>();
+		list.add(getStore1());
 		
-		return page;
+		return new PageImpl<Store>(list, getPageRequest(), list.size());
+	}
+	
+	public static MultiValueMap<String, String> urlNearParameters(Pageable pageable, StoreLocationType storeLocationType, double longitude,
+			double latitude, long minDistance, long maxDistance) {
+				MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+				parameters.add("page", "" + 0);
+				parameters.add("size", "" + 10);
+				parameters.add("longitude", "" + longitude);
+				parameters.add("latitude", "" + latitude);
+				parameters.add("minDistance", "" + minDistance);
+				parameters.add("maxDistance", "" + maxDistance);
+				
+				if(storeLocationType != null)
+					parameters.add("storeLocationType", storeLocationType.getDescription());
+				
+		return parameters;
 	}
 
 	public static Location createLocation(String type, double[] coordinates) {
@@ -68,5 +104,4 @@ public class ObjectCreator {
 	public static PageRequest getPageRequest() {
 		return new PageRequest(0, 10);
 	}
-
 }

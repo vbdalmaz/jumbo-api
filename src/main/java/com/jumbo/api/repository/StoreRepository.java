@@ -17,8 +17,8 @@ public interface StoreRepository extends MongoRepository<Store, String> {
 	List<Store> findAll();
 	
 	@Query("{ location: { $near : { $geometry: {coordinates: [ ?0, ?1 ] }, $minDistance: ?2 , $maxDistance: ?3 }}}")
-	Page<Store> findByNearStores(Pageable pageable, double longitude,double latitude, long minDistance, long maxDistance);
+	Page<Store> findStoresNear(Pageable pageable, double longitude,double latitude, long minDistance, long maxDistance);
 	
 	@Query("{ $and: [ {locationType: ?0}, {location: { $near : { $geometry: {coordinates: [ ?1, ?2 ] }, $minDistance: ?3 , $maxDistance: ?4 }}}]}")
-	Page<Store> findByStoreTypeNear(Pageable pageable, StoreLocationType storeLocationType, double longitude, double latitude, long minDistance, long maxDistance);
+	Page<Store> findStoresNearAndByType(Pageable pageable, StoreLocationType storeLocationType, double longitude, double latitude, long minDistance, long maxDistance);
 }

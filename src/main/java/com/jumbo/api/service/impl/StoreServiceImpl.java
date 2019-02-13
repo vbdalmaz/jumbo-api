@@ -20,13 +20,13 @@ public class StoreServiceImpl implements StoreService {
 
 	@Override
 	public Page<Store> getStoresNearMe(Pageable pageable, double longitude, double latitude, long minDistance, long maxDistance) {
-		return storeRepository.findByNearStores(pageable, longitude, latitude, minDistance, maxDistance);
+		return storeRepository.findStoresNear(pageable, longitude, latitude, minDistance, maxDistance);
 	}
 
 	@Override
 	public Page<Store> getStoresByTypeNearMe(Pageable pageable, StoreLocationType storeLocationType, double longitude, double latitude,
 			long minDistance, long maxDistance) {
-		return storeRepository.findByStoreTypeNear(pageable, storeLocationType, longitude, latitude, minDistance, maxDistance);
+		return storeRepository.findStoresNearAndByType(pageable, storeLocationType, longitude, latitude, minDistance, maxDistance);
 	}
 
 	@Override
