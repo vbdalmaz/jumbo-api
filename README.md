@@ -15,10 +15,10 @@ If you prefer you can use my vagrant script to deploy on AWS:
 https://github.com/vbdalmaz/jumbo-api-devops/
 
 # Amazon Swagger Link
-http://ec2-54-233-234-116.sa-east-1.compute.amazonaws.com:8080/jumbo/swagger-ui.html
+http://ec2-18-228-191-93.sa-east-1.compute.amazonaws.com:8080/jumbo/swagger-ui.html
 
-# React Frontend Link
-http://ec2-54-233-234-116.sa-east-1.compute.amazonaws.com:3000/
+# React Frontend Link should be ready tomorrow February 12
+http://ec2-18-228-191-93.sa-east-1.compute.amazonaws.com:3000/
 
-# React Frontend GIT
+# React Frontend GIT should be ready tomorrow February 12
 https://github.com/vbdalmaz/jumbo-frontend
