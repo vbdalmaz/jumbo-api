@@ -1,6 +1,6 @@
 # Backend Test
 
-Testing I'm using Spring Boot with Java 8 and MongoDB as Database
+I'm using Spring Boot with Java 8 and MongoDB as Database
 
 # Docker 
 To run local just install java 8 and docker
